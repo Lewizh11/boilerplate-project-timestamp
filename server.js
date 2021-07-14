@@ -24,21 +24,28 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-app.get('/api/:date', (req, res) => {
-  const { date } = req.params
- 
-  const currentDate = new Date(date)
+app.get('/api/:date?', (req, res) => {
+  const date = req.params.date
 
-  if(currentDate != "Invalid Date")
-    return res.json({
+  if(!date){
+   const currentDate = new Date()
+   return res.json({
       unix: currentDate.getTime(),
       utc: currentDate.toUTCString()
+    })
+  }
+  
+  const convertDate = new Date(date) != "Invalid Date" 
+    ? new Date(date) : new Date(parseInt(date))
+
+  if(convertDate != "Invalid Date")
+    return res.json({
+      unix: convertDate.getTime(),
+      utc: convertDate.toUTCString()
     })
   
   res.status(400).json({ error: "Invalid Date"})
 })
-
-app.get('/api/')
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
